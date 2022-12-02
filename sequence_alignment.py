@@ -1,44 +1,16 @@
-"""
-The Needleman-Wunsch Algorithm/ Sequence Alignment
-==============================
-CS4436 Final Project
---- Sanjit Sharma --- Peter Wu --- Stefan Pisic ---
-"""
+# The Needleman-Wunsch Algorithm/ Sequence Alignment
+# ==============================
+# CS4436 Final Project
+# --- Sanjit Sharma --- Peter Wu --- Stefan Pisic ---
+
 
 from ctypes import alignment
 from re import I
 from xml.etree.ElementTree import tostring
+
 import numpy as np
-from itertools import combinations
 
-human = 'VLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR'
-olive_baboon = 'GLSDGEWQLVLNVWGKVEADIPSHGQEVLIRLFKGHPETLEKFDKFKHLKSEDEMKASEDLKKHGATVLTALGGILKKKGHHEAEIKPLAQSHATKHKIPVKYLELISESIIQVLQSKHPGDFGADAQGAMNKALELFRNDMAAKYKELGFQG'
-garden_pea = 'GFTDKQEALVNSSSEFKQNLPGYSILFYTIVLEKAPAAKGLFSFLKDTAGVEDSPKLQAHAEQVFGLVRDSAAQLRTKGEVVLGNATLGAIHVQKGVTNPHFVVVKEALLQTIKKASGNNWSEELNTAWEVAYDGLATAIKKAMKTA'
-gayal = 'VLSAADKGNVKAAWGKVGDHAAEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGAKVAAALTKAVGHLDDLPGALSELSDLHAHKLRVDPVNFKLLSHSLLVTLASHLPNDFTPAVHASLDKFLANVSTVLTSKYR'
-goat  = 'VLSAADKSNVKAAWGKVGGNAGAYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGEKVAAALTKAVGHLDDLPGTLSDLSDLHAHKLRVDPVNFKLLSHSLLVTLACHLPNDFTPAVHASLDKFLANVSTVLTSKYR'
-mouse = 'VHLTDAEKSAVSCLWAKVNPDEVGGEALGRLLVVYPWTQRYFDSFGDLSSASAIMGNPKVKAHGKKVITAFNEGLKNLDNLKGTFASLSELHCDKLHVDPENFRLLGNAIVIVLGHHLGKDFTPAAQAAFQKVVAGVATALAHKYH'
-sheep = 'MLTAEEKASVISLFAKVNVEEVGGEALGRLLVVYPWTQRFFEHFGDLSSADAILGNPKVKGHGKKVLNSFSEGLKQLDDLKGAFASLSELHCDKLHVDPENFRLLGNVLVVVLARRFGGEFTPELQANFQKVVTGVANALAHRYH'
-white_rhinoceres = 'VELTAEEKAAVLALWDKVKEDEVGGEALGRLLVVYPWTQRFFDSFGDLSTPAAVMGNAKVKAHGKKVLHSFGDGVHHLDNLKGTFAALSELHCDKLHVDPENFRLLGNVLVVVLAKHFGKQFTPELQAAYQKVVAGVANALAHKYH'
-european_moose = 'VLSATDKSNVKAAWGKVGGNAPAYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKAHGEKVANALTKAVGHLDDLPGTLSDLSDLHAHKLRVDPVNFKLLSHTLLVTLAAHLPSDFTPAVHASLDKFLANVSTVLTSKYR'
-sesbania_rostrata = 'MGFTEKQEALVNASYEAFKQNLPGNSVLFYSFILEKAPAAKGMFSFLKDSDGVPQNNPSLQAHAEKVFGLVRDSAAQLRATGVVVLADASLGSVHVQKGVLDPHFVVVKEALLKTLKEAAGATWSDEVSNAWEVAYDGLSAAIKKAMS'
-
-dna_dict= {
-    'human': human,
-    'olive_baboon': olive_baboon,
-    'garden_pea': garden_pea,
-    'gayal': gayal,
-    'goat': goat,
-    'mouse': mouse,
-    'sheep': sheep,
-    'white_rhinoceres': white_rhinoceres,
-    'european_moose': european_moose,
-    'sesbania_rostrata': sesbania_rostrata
-}
-
-dna_pairs =  combinations(dna_dict.keys(), 2) # non-orderd pairs of DNAs
-
-
-def nw(x, y, gap = 1, gap_initiate = -10, gap_extend = -2):
+def nw(x, y, blosum62_dict, gap = 1, gap_initiate = -10, gap_extend = -2):
     nx = len(x)
     ny = len(y)
     # Optimal score at every possible character pair
@@ -65,7 +37,7 @@ def nw(x, y, gap = 1, gap_initiate = -10, gap_extend = -2):
         for j in range(ny):
             
             # match/mistch cost, according to blosum62
-            t[0] = F[i,j] + blosum62(x[i], y[j]) 
+            t[0] = F[i,j] + blosum62(x[i], y[j], blosum62_dict) 
 
             # gap cost, according to gap_extend/initiate
             if G[i,j+1] == 1:
@@ -164,7 +136,7 @@ def score_matrix(proteins=''):
     return blosum62_dict
 
 # return score in blosum62
-def blosum62(c1, c2):
+def blosum62(c1, c2, blosum62_dict):
 
     # pairs are non-ordered, so check twice
     pair1 = c1 + c2 
@@ -174,24 +146,3 @@ def blosum62(c1, c2):
         return blosum62_dict[pair1]
     else:
         return blosum62_dict[pair2]
-
-def main(): 
-
-    # store alignment results
-    with open('alignment_results.txt', 'w') as f:
-        for dna1, dna2 in dna_pairs:
-
-            # Needleman-Wunsch Algorithm/ Sequence Alignment
-            alignments = nw(dna_dict[dna1], dna_dict[dna2])
-
-            score  = alignments[0]
-            alignment = alignments[1]
-
-            f.write(dna1 + ' ' + dna2+'\n')
-            f.write(str(score) + '\n')
-            f.write(alignment + '\n')
-
-if __name__ == "__main__":
-    blosum62_dict = score_matrix('CSTPAGNDEQHRKMILVFYW')    
-    main()
-    print('done')
