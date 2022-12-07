@@ -18,7 +18,7 @@ from spanning_tree import Graph
 # alignments[x][4]: alignment for sequence 2
 def read_alignments(file):
     alignments = []
-    with open('alignment_results.txt', 'r') as f:
+    with open(pairwise_file, 'r') as f:
         dnas = f.readline()
         while(True):
             dnas = dnas.split()
@@ -61,11 +61,13 @@ if __name__ == '__main__':
     }
     dna_pairs =  combinations(dna_dict.keys(), 2) # non-orderd pairs of DNAs
 
-    blosum62_dict = score_matrix('CSTPAGNDEQHRKMILVFYW')    
+    blosum62_dict = score_matrix('CSTPAGNDEQHRKMILVFYW') 
+
+    pairwise_file = 'pairwise_results.txt'   
 
     # pairwise sequence alignment
     # store alignment results
-    with open('alignment_results.txt', 'w') as f:
+    with open(pairwise_file, 'w') as f:
         for dna1, dna2 in dna_pairs:
 
             # Needleman-Wunsch Algorithm/ Sequence Alignment
@@ -78,9 +80,9 @@ if __name__ == '__main__':
             f.write(str(score) + '\n')
             f.write(alignment + '\n')
 
-    print('####pairwise sequence alignment done')
+    print('####pairwise sequence alignment done####')
 
-    pairwise_alignments = read_alignments('alignment_results.txt')
+    pairwise_alignments = read_alignments(pairwise_file)
 
     dnas = ['human', 'olive_baboon', 'garden_pea', 'gayal', 'goat', 'mouse', 'sheep',
     'white_rhinoceres', 'european_moose', 'sesbania_rostrata']
@@ -104,11 +106,22 @@ if __name__ == '__main__':
     for u,v, weight in result:
         tree_order.append([u, v])
 
-    print('####spanning tree to guide the order of multiple alignment done')
+    print('####spanning tree to guide the order of multiple alignment done####')
 
     # Iterative multiple alignment
     iterative_alignment(tree_order, pairwise_alignments, dna_dict_num)
 
-    print('####iterative multiple alignment done')
+    print('####iterative multiple alignment done####')
 
     import difflib
+
+
+    # 4 - 8
+    # 4 - 8 - 3
+    # 4- 8 - 3 - 0
+    # 4- 8 - 3 - 0, 5-7
+    # 4- 8 - 3 - 0, 5-7-6
+    # 4- 8 - 3 - 0, 5-7-6, 2-9
+    # 4-8-3-0-5-7-6, 2-9
+    # 4-8-3-0-5-7-6-1, 2-9
+    # 4-8-3-0-5-7-6-1-2-9

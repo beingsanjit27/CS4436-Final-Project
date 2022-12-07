@@ -189,4 +189,12 @@ def iterative_alignment(tree_order, pairwise_alignments, dna_dict_num):
         #print(node.dna)
         print(node.sequence.replace("\n", ""))
 
+    # pairwise sequence alignment
+    # store alignment results
+    with open('multiple_results.txt', 'w') as f:
+        for node in node_list:
+
+            f.write(node.dna + '\n')
+            f.write(node.sequence)
+
     return
